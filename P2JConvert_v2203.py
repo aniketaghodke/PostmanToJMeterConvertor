@@ -18,9 +18,9 @@ headerStringEnd_jmx = '              </collectionProp>             </HeaderManag
 itr_jmx = ''
 itr_final_jmx = ''
 
-########### Code  #########
+########### Code #########
 
-inputpath = input("Enter file path where postman collection is parked along with environment variables and/or global variables if defined : ")
+inputpath = input("Enter full directory path where Postman collection (collection.json) is parked along with environment variables (environment.json) and/or global variables (globals.json), if defined: ")
 #variablefile = input("If you have defined variables in postman, please export variables for the environment where you would like to run performance test and provide exported file path here, in case no variable defined just press Enter key\nEnter variables file path : ")
 
 # print(os.getcwd())
@@ -28,14 +28,15 @@ inputpath = input("Enter file path where postman collection is parked along with
 try:
     for i in os.listdir(inputpath):
          # print(i)
-         if "collection" in i:
+         if "collection.json" in i:
             inputfile = inputpath+"\\"+i
-         if "environment" in i:
+         if "environment.json" in i:
             variablefile = inputpath+"\\"+i
-         if "globals" in i:
+         if "globals.json" in i:
             globalvariablefile = inputpath+"\\"+i
 except Exception as e:
-    logging.error('Something went wrong with path provided, please verify path' + str(e))
+    logging.error('Something went wrong with provided path, please verify path ' + str(e))
+    logging.error('Please check that the filenames are exactly collection.json, environment.json, globals.json')
     sys.exit(1)
 
 dirname = os.path.dirname(inputfile)
@@ -50,7 +51,7 @@ try:
         filePart_2 = splitFile[1]
         # print(filePart_2)
 except Exception as e:
-    logging.error('Something went wrong while opening postman collection' + str(e))
+    logging.error('Something went wrong while opening Postman collection ' + str(e))
     sys.exit(1)
 
 findRequests = re.findall(r'{"name": "(.*?)",(.*?)"response"',filePart_2, re.DOTALL)
@@ -174,7 +175,7 @@ try:
 except Exception as e:
     logging.info('Either environment variables file not provided or something went wrong while opening it! ' + str(e))
 
-# global variables
+# Global Variables
 try:
     with open(globalvariablefile, 'r') as rf:
         FileContent = rf.read().replace('\n','')
@@ -207,5 +208,5 @@ try:
         wf.write(output)
         logging.info('Successfully created jmeter JMX file & Parked at location: ' +outfile)
 except Exception as e:
-    logging.error('Something went wrong while opening output file' + str(e))
+    logging.error('Something went wrong while opening output file ' + str(e))
     sys.exit()
