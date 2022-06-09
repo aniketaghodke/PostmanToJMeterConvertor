@@ -26,6 +26,8 @@ inputpath = input("Enter full directory path where Postman collection is parked 
 try:
     for i in os.listdir(inputpath):
          if "collection" in i:
+
+            outfileName = i.split('.')[0]
             inputfile = inputpath+"/"+i
          if "environment" in i:
             variablefile = inputpath+"/"+i
@@ -42,7 +44,7 @@ except Exception as e:
     sys.exit(1)
 
 dirname = os.path.dirname(inputfile)
-outfile = dirname+'./JMeterScript.jmx'
+outfile = dirname+'/'+outfileName+'.jmx'
 
 num = 0
 for i in level_1: # i type dict
@@ -109,6 +111,7 @@ for i in level_1: # i type dict
             temp_jmx = temp_jmx.replace('DYNAMIC-BODY-PART',paramString_ToAdd)
     except:
         temp_jmx = temp_jmx.replace('DYNAMIC-BODY-PART', without_body_part)
+
 
     # Headers
     try:
