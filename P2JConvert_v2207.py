@@ -26,7 +26,6 @@ inputpath = input("Enter full directory path where Postman collection is parked 
 try:
     for i in os.listdir(inputpath):
          if "collection" in i:
-
             outfileName = i.split('.')[0]
             inputfile = inputpath+"/"+i
          if "environment" in i:
@@ -110,8 +109,20 @@ for i in level_1: # i type dict
             paramString_ToAdd = without_body_part.replace('<collectionProp name="Arguments.arguments"/>           </elementProp>',paramString_All)
             temp_jmx = temp_jmx.replace('DYNAMIC-BODY-PART',paramString_ToAdd)
     except:
-        temp_jmx = temp_jmx.replace('DYNAMIC-BODY-PART', without_body_part)
+        checkForQuery = i['request']['url']
+        if 'query' in checkForQuery:
+            for q in checkForQuery['query']:
+                if ('disabled' in q) and (q['disabled'] == True):
+                    pass
+                else:
+                    param_to_add = '<elementProp name="'+q['key']+'" elementType="HTTPArgument"> <boolProp name="HTTPArgument.always_encode">true</boolProp> <stringProp name="Argument.value">'+q['value']+'</stringProp> <stringProp name="Argument.metadata">=</stringProp> <boolProp name="HTTPArgument.use_equals">true</boolProp> <stringProp name="Argument.name">'+q['key']+'</stringProp> </elementProp>'
+                    paramStringMid = paramStringMid + param_to_add
 
+            paramString_All = '<collectionProp name="Arguments.arguments">' + paramStringMid + '</collectionProp></elementProp>'
+            paramString_ToAdd = without_body_part.replace('<collectionProp name="Arguments.arguments"/>           </elementProp>', paramString_All)
+            temp_jmx = temp_jmx.replace('DYNAMIC-BODY-PART', paramString_ToAdd)
+        else:
+            temp_jmx = temp_jmx.replace('DYNAMIC-BODY-PART', without_body_part)
 
     # Headers
     try:
